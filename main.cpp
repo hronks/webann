@@ -5,6 +5,7 @@ int add_one(int x);
 int count_chars(char* x);
 void load_layer(int a, int b, char* type, char* cell_type);
 
+ReLU relu;
 Layer live_layer;
 
 extern "C" {
@@ -42,9 +43,7 @@ extern "C" {
     live_layer.outputs = b;
 
     if(type == "dense") {
-
-
-
+      live_layer.type = &relu;
     }
 
     load_layer(a, b, type, cell_type);
@@ -58,7 +57,10 @@ void load_layer (int a, int b, char* type, char* cell_type) {
   char *output;
   output = type;
 
-  printf("%d\n", live_layer.inputs);
+  printf("%d,", live_layer.inputs);
+  printf("%d\n", live_layer.outputs);
+  printf("%s\n", live_layer.type);
+//  printf("%s\n", live_layer.cell_type);
 }
 
 int add_one(int x) {
