@@ -3,16 +3,37 @@
   <body>
     <div id="output">
     </div>
+    <div>
+      <input type="number" id="input">
+      <button id="button_in">Click Me!</button>
+    </div>
+    <button id="button">Click Me!</button>
   </body>
+
+  <script src="/a.out.js"></script>
   <script>
 
-    var Module = {
-      onRuntimeInitialized: function() {
-        console.log('lerp result: ' + Module.lerp(1, 2, 0.5));
-        document.getElementById("output").innerHTML = Module.lerp(1, 2, 0.5);
+    Module.onRuntimeInitialized = _ => {
+      const c = new Module.Layer(10, 32);
+      console.log(c.inputs);
+      c.test1();
+      console.log(c.outputs);
+      console.log(c.test2());
+
+      document.getElementById("button").onclick = function() {
+        document.getElementById('output').innerHTML = c.inputs;
       }
+
+      document.getElementById("button_in").onclick = function() {
+        c.inputs = +document.getElementById('input').value;
+        document.getElementById('output').innerHTML = c.inputs;
+      }
+
+
     };
 
+    c.delete();
+
   </script>
-  <script src="main2.js"></script>
+
 </html>

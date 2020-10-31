@@ -44,8 +44,9 @@ extern "C" {
   void load_layer_export (int a, int b, char* type, char* cell_type) {
 
     if(strcmp(type,"dense") == 0) {
-      if(strcmp(cell_type,"relu") == 0)
+      if(strcmp(cell_type,"relu") == 0) {
         DenseLayer<double> temp(a, b, &relu);
+      }
       if(strcmp(cell_type,"sigmoid") == 0)
         DenseLayer<double> temp(a, b, &sigmoid);
       dense_layer.push_back(temp);
