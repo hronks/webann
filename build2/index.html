@@ -1,37 +1,97 @@
 <!doctype html>
 <html>
   <body>
+
     <div id="output">
     </div>
-    <div>
-      <input type="number" id="input">
-      <button id="button_in">Click Me!</button>
+
+    <div id = "layer_input_table_div">
+      <table id = "layer_input_table">
+        <tr>
+          <td>Type</td>
+          <td>
+            <select id="layer_type">
+              <option value = "dense">Dense</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td></td>
+        </tr>
+        <tr>
+          <td>Value type</td>
+          <td>
+            <select id="layer_value_type">
+              <option value = "double">Double</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Cell type</td>
+          <td>
+            <select id="layer_cell_type">
+              <option value = "relu">ReLU</option>
+              <option value = "sigmoid">Sigmoid</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Inputs</td>
+          <td>
+            <input type="number" id="layer_inputs">
+          </td>
+        </tr>
+        <tr>
+          <td>Outputs</td>
+          <td>
+            <input type="number" id="layer_outputs">
+          </td>
+        </tr>
+      </table>
     </div>
-    <button id="button">Click Me!</button>
+
+    <button id="push_layer">Push layer</button>
+    <button id="pop_layer">Pop layer</button>
+
   </body>
 
   <script src="/index.js"></script>
   <script>
 
     Module.onRuntimeInitialized = _ => {
-      const c = new Module.Layer(10, 32);
+
+      const c = new Module.Layer("test", 10, 32);
       console.log(c.inputs);
       c.test1();
       console.log(c.outputs);
       console.log(c.test2());
 
-      document.getElementById("button").onclick = function() {
-        document.getElementById('output').innerHTML = c.inputs;
+      live_network = new Module.AnnWrap;
+
+      document.getElementById("push_layer").onclick = function() {
+
+        live_network.push_back_layer(
+          document.getElementById('layer_type').value,
+          document.getElementById('layer_value_type').value,
+          document.getElementById('layer_cell_type').value,
+          +document.getElementById('layer_inputs').value,
+          +document.getElementById('layer_outputs').value
+        );
+        c.inputs = +document.getElementById('layer_inputs').value;
+        c.outputs = +document.getElementById('layer_outputs').value;
+
+        document.getElementById('output').innerHTML = live_network.signature();
       }
 
-      document.getElementById("button_in").onclick = function() {
-        c.inputs = +document.getElementById('input').value;
-        document.getElementById('output').innerHTML = c.inputs;
+      document.getElementById("pop_layer").onclick = function() {
+        live_network.pop_back_layer();
+        document.getElementById('output').innerHTML = live_network.signature();
       }
 
 
     };
 
+    live_network.delete();
     c.delete();
 
   </script>
