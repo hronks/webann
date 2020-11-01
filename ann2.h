@@ -2,11 +2,25 @@
 #include <vector>
 #include <string>
 
+struct ActFunct {
+
+  std::string type;
+
+};
+
+template<typename T> struct f: public ActFunct {
+
+
+}
+
+
 struct Layer {
 
   std::string type;
   int inputs;
   int outputs;
+  std::string cell_type;
+  std::vector <ActFunct*> act_funct;
 
   Layer(std::string t, int a, int b) {
     type = t;
