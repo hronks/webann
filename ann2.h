@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <cmath>
 
 struct ActFunctBase {
 
@@ -14,10 +15,22 @@ struct ActFunctBase {
 
 template<typename T> struct ActFunct: public ActFunctBase {
 
-  ActFunct(int a, int b):ActFunctBase("DenseDoubleLayer") {
-    
+  T (*f) (T);
+
+  ActFunct(T (*f_t) (T), std::string t):ActFunctBase(t) {
+    f = f_t;
   }
 
+};
+
+template<typename T> T ReLU(T x) {
+  if(x > 0) return x;
+  return 0;
+};
+
+template<typename T> T Sigmoid(T x) {
+  if(x > 0) return x;
+  return 0;
 };
 
 
@@ -35,13 +48,6 @@ struct Layer {
     outputs = b;
   }
 
-  void test1() {
-    inputs = 3;
-  }
-
-  int test2() {
-    return inputs * outputs;
-  }
 };
 
 struct DenseDoubleLayer: public Layer {
@@ -55,48 +61,53 @@ struct DenseDoubleLayer: public Layer {
 
 };
 
+struct CostFunctBase {
+
+  std::string type;
+
+  CostFunctBase(std::string t) {
+    type = t;
+  }
+
+};
+
+template<typename T> struct CostFunct: public CostFunctBase {
+
+  T (*f) (std::vector<T>, std::vector<T>);
+
+  CostFunct(T (*f_t) (std::vector<T>, std::vector<T>), std::string t):CostFunctBase(t) {
+    f = f_t;
+  }
+
+};
+
+template<typename T> T BinaryCrossEntropy(std::vector<T> x, std::vector<T> y) {
+  T temp;
+
+  for(int i = 0; i < x.size(); ++i) {
+    temp += (y[i] - x[i]) * (y[i] - x[i]);
+  }
+  return temp;
+};
+
+template<typename T> T Quadratic(std::vector<T> x, std::vector<T> y) {
+  T temp;
+
+  for(int i = 0; i < x.size(); ++i) {
+    temp += (y[i] - x[i]) * (y[i] - x[i]);
+  }
+  return temp;
+};
+
 struct AnnWrap {
 
   std::vector<Layer*> layer;
+  CostFunctBase* cost_funct;
+  std::string cost_funct_type;
 
-  void push_back_layer(
-    std::string layer_type_t,
-    std::string layer_value_type_t,
-    std::string layer_cell_type_t,
-    int inputs_t, int outputs_t) {
-
-    if(layer_type_t == "dense") {
-      if(layer_value_type_t == "double") {
-        DenseDoubleLayer *ptr = new DenseDoubleLayer(inputs_t, outputs_t);
-        layer.push_back(ptr);
-      }
-    }
-  }
-
-  void pop_back_layer() {
-
-    delete layer[layer.size() - 1];
-    layer.pop_back();
-
-  }
-
-  std::string signature() {
-
-    std::string temp;
-    temp = "";
-
-    for(int i = 0; i < layer.size(); ++i) {
-      temp += "[";
-      temp += layer[i]->type;
-      temp += ", ";
-      temp += std::to_string(layer[i]->inputs);
-      temp += ", ";
-      temp += std::to_string(layer[i]->outputs);
-      temp += "]";
-      if(i < layer.size()-1) temp += " -> ";
-    }
-
-    return temp;
-  }
+  void push_back_layer(std::string layer_type_t, std::string layer_value_type_t, std::string layer_cell_type_t, int inputs_t, int outputs_t);
+  void pop_back_layer();
+  void set_cost_funct(std::string funct_type_t, std::string value_type_t);
+  std::string signature();
 
 };

@@ -1,57 +1,66 @@
 <!doctype html>
 <html>
+<head>
+  <link rel="icon" href="data:;base64,=">
+</head>
+
   <body>
 
-    <div id="output">
-    </div>
-
-    <div id = "layer_input_table_div">
-      <table id = "layer_input_table">
-        <tr>
-          <td>Type</td>
-          <td>
-            <select id="layer_type">
-              <option value = "dense">Dense</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td></td>
-        </tr>
-        <tr>
-          <td>Value type</td>
-          <td>
-            <select id="layer_value_type">
-              <option value = "double">Double</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Cell type</td>
-          <td>
-            <select id="layer_cell_type">
-              <option value = "relu">ReLU</option>
-              <option value = "sigmoid">Sigmoid</option>
-            </select>
-          </td>
-        </tr>
-        <tr>
-          <td>Inputs</td>
-          <td>
-            <input type="number" id="layer_inputs">
-          </td>
-        </tr>
-        <tr>
-          <td>Outputs</td>
-          <td>
-            <input type="number" id="layer_outputs">
-          </td>
-        </tr>
-      </table>
-    </div>
-
+    <div>
+      <div id = "layer_input_table_div">
+        <table id = "layer_input_table">
+          <tr>
+            <td>Type</td>
+            <td>
+              <select id="layer_type">
+                <option value = "dense">Dense</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Value type</td>
+            <td>
+              <select id="layer_value_type">
+                <option value = "double">Double</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Cell type</td>
+            <td>
+              <select id="layer_cell_type">
+                <option value = "relu">ReLU</option>
+                <option value = "sigmoid">Sigmoid</option>
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td>Inputs</td>
+            <td>
+              <input type="number" id="layer_inputs">
+            </td>
+          </tr>
+          <tr>
+            <td>Outputs</td>
+            <td>
+              <input type="number" id="layer_outputs">
+            </td>
+          </tr>
+        </table>
+      </div>
     <button id="push_layer">Push layer</button>
     <button id="pop_layer">Pop layer</button>
+  </div>
+
+  <div>
+    <div>
+      <textarea id = "out">
+      </textarea>
+    </div>
+  </div>
 
   </body>
 
@@ -60,13 +69,15 @@
 
     Module.onRuntimeInitialized = _ => {
 
-      const c = new Module.Layer("test", 10, 32);
-      console.log(c.inputs);
-      c.test1();
-      console.log(c.outputs);
-      console.log(c.test2());
+      var out = document.getElementById('out');
 
       live_network = new Module.AnnWrap;
+
+      live_network.push_back_layer("dense", "double", "relu", 10, 32);
+      live_network.push_back_layer("dense", "double", "relu", 32, 32);
+      live_network.push_back_layer("dense", "double", "sigmoid", 32, 1);
+      live_network.set_cost_funct("binary_cross_entropy", "double");
+      document.getElementById('out').value += live_network.signature();
 
       document.getElementById("push_layer").onclick = function() {
 
@@ -77,22 +88,23 @@
           +document.getElementById('layer_inputs').value,
           +document.getElementById('layer_outputs').value
         );
-        c.inputs = +document.getElementById('layer_inputs').value;
-        c.outputs = +document.getElementById('layer_outputs').value;
 
-        document.getElementById('output').innerHTML = live_network.signature();
+        out.value += live_network.signature();
+        out.scrollTop = out.scrollHeight;
       }
 
       document.getElementById("pop_layer").onclick = function() {
         live_network.pop_back_layer();
-        document.getElementById('output').innerHTML = live_network.signature();
+        document.getElementById('out').value += live_network.signature();
       }
 
+      document.onunload = function() {
+        live_network.delete();
+      }
 
     };
 
-    live_network.delete();
-    c.delete();
+
 
   </script>
 
