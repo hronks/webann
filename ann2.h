@@ -2,16 +2,23 @@
 #include <vector>
 #include <string>
 
-struct ActFunct {
+struct ActFunctBase {
 
   std::string type;
 
+  ActFunctBase(std::string t) {
+    type = t;
+  }
+
 };
 
-template<typename T> struct f: public ActFunct {
+template<typename T> struct ActFunct: public ActFunctBase {
 
+  ActFunct(int a, int b):ActFunctBase("DenseDoubleLayer") {
+    
+  }
 
-}
+};
 
 
 struct Layer {
@@ -20,7 +27,7 @@ struct Layer {
   int inputs;
   int outputs;
   std::string cell_type;
-  std::vector <ActFunct*> act_funct;
+  std::vector <ActFunctBase*> act_funct;
 
   Layer(std::string t, int a, int b) {
     type = t;
