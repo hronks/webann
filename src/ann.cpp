@@ -1,4 +1,4 @@
-#include "ann2.h"
+#include "ann.h"
 
 void AnnWrap::push_back_layer(
   std::string layer_type_t,
@@ -49,6 +49,19 @@ void AnnWrap::set_cost_funct(std::string funct_type_t, std::string value_type_t)
   }
 }
 
+std::string AnnWrap::layer_data(int l) {
+
+  std::string temp;
+  temp = "";
+
+  temp += layer[l]->data();
+
+//  temp += std::to_string(l);
+
+  temp += "\n";
+  return temp;
+}
+
 std::string AnnWrap::signature() {
 
   std::string temp;
@@ -64,12 +77,12 @@ std::string AnnWrap::signature() {
     temp += ", ";
     temp += std::to_string(layer[i]->outputs);
     temp += "]";
-    temp += " -> ";
+    temp += " ->\n";
   }
 
   temp += cost_funct->type;
   temp += " (";
   temp += cost_funct_type;
-  temp += ")";
+  temp += ")\n";
   return temp;
 }

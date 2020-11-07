@@ -6,24 +6,29 @@
 
   <body>
 
-    <div>
+    <div class = "left_bar_div" style="
+      position: fixed;
+      width: 300px;
+      ">
       <div id = "layer_input_table_div">
+        <h3>Layer parameters</h3>
         <table id = "layer_input_table">
+          <colgroup>
+            <col style="width:150px">
+            <col style="width:150px">
+          </colgroup>
           <tr>
             <td>Type</td>
             <td>
-              <select id="layer_type">
+              <select id="layer_type" style="width:108px">
                 <option value = "dense">Dense</option>
               </select>
             </td>
           </tr>
           <tr>
-            <td></td>
-          </tr>
-          <tr>
             <td>Value type</td>
             <td>
-              <select id="layer_value_type">
+              <select id="layer_value_type" style="width:108px">
                 <option value = "double">Double</option>
               </select>
             </td>
@@ -31,7 +36,7 @@
           <tr>
             <td>Cell type</td>
             <td>
-              <select id="layer_cell_type">
+              <select id="layer_cell_type" style="width:108px">
                 <option value = "relu">ReLU</option>
                 <option value = "sigmoid">Sigmoid</option>
               </select>
@@ -40,25 +45,84 @@
           <tr>
             <td>Inputs</td>
             <td>
-              <input type="number" id="layer_inputs">
+              <input type="number" id="layer_inputs" value = 10 style="width:100px">
             </td>
           </tr>
           <tr>
             <td>Outputs</td>
             <td>
-              <input type="number" id="layer_outputs">
+              <input type="number" id="layer_outputs" value = 10 style="width:100px">
             </td>
           </tr>
         </table>
       </div>
     <button id="push_layer">Push layer</button>
     <button id="pop_layer">Pop layer</button>
+    <button id="set_layer">Set layer -></button>
+    <input type="number" id="selection_set_layer" value = 0 style="width:40px"></input>
+
+    <div id = "network_cost_table_div">
+      <h3>Cost parameters</h3>
+      <table id = "network_cost_table">
+        <colgroup>
+          <col style="width:150px">
+          <col style="width:150px">
+        </colgroup>
+        <tr>
+          <td>Cost function</td>
+          <td>
+            <select id="cost_function" style="width:108px">
+              <option value = "quadratic">Quadratic</option>
+              <option value = "binary_cross_entropy">BinXEntropy</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Cost value type</td>
+          <td>
+            <select id="cost_value_type" style="width:108px">
+              <option value = "double">Double</option>
+            </select>
+          </td>
+        </tr>
+      </table>
+      <button id="set_cost_parameters">Set cost parameters</button>
+
+    </div>
+
+    <div id = "data_input">
+
+      <h3>Data input</h3>
+      <div>
+        Paste data in textbox below<br>
+        <textarea id = "data_input" style="
+        width: 250px;
+        height: 300px;
+        "></textarea>
+      </div>
+
+
+    </div>
+
   </div>
 
-  <div>
+  <div class = "central_div" style="
+    position: fixed;
+    top: 10px;
+    left: 330px;
+    ">
+    <h3>Output text box</h3>
     <div>
-      <textarea id = "out">
-      </textarea>
+      <button id="clear_out">Clear text</button>
+      <button id="print_live_network">Print network</button>
+      <button id="print_live_selected_layer">Print layer -></button>
+      <input type="number" id="selection_live_selected_layer" value = 0 style="width:40px"></input>
+    </div>
+    <div>
+      <textarea id = "out" style="
+      width: 400px;
+      height: 500px;
+      "></textarea>
     </div>
   </div>
 
@@ -67,9 +131,14 @@
   <script src="/index.js"></script>
   <script>
 
-    Module.onRuntimeInitialized = _ => {
+    var out = document.getElementById('out');
 
-      var out = document.getElementById('out');
+    function print(x) {
+      out.value += x;
+      out.scrollTop = out.scrollHeight;
+    }
+
+    Module.onRuntimeInitialized = _ => {
 
       live_network = new Module.AnnWrap;
 
@@ -77,7 +146,6 @@
       live_network.push_back_layer("dense", "double", "relu", 32, 32);
       live_network.push_back_layer("dense", "double", "sigmoid", 32, 1);
       live_network.set_cost_funct("binary_cross_entropy", "double");
-      document.getElementById('out').value += live_network.signature();
 
       document.getElementById("push_layer").onclick = function() {
 
@@ -89,13 +157,37 @@
           +document.getElementById('layer_outputs').value
         );
 
-        out.value += live_network.signature();
-        out.scrollTop = out.scrollHeight;
+        print("LAYER ADDED TO NETWORK\nLIVE NETWORK IS...\n");
+        print(live_network.signature());
+        print("\n");
+      }
+
+      document.getElementById("clear_out").onclick = function() {
+        out.value = ("");
+      }
+
+      document.getElementById("print_live_network").onclick = function() {
+        print("LIVE NETWORK IS...\n");
+        print(live_network.signature());
+        print("\n");
+      }
+
+      document.getElementById("print_live_selected_layer").onclick = function() {
+
+        var selected_layer = +document.getElementById('selection_live_selected_layer').value;
+        print("LAYER ");
+        print(selected_layer);
+        print(" DATA...\n");
+        print(live_network.layer_data(selected_layer));
+        print("\n");
       }
 
       document.getElementById("pop_layer").onclick = function() {
         live_network.pop_back_layer();
-        document.getElementById('out').value += live_network.signature();
+
+        print("LAYER REMOVED FROM NETWORK\nLIVE NETWORK IS...\n");
+        print(live_network.signature());
+        print("\n");
       }
 
       document.onunload = function() {

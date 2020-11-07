@@ -3,6 +3,8 @@
 #include <string>
 #include <cmath>
 
+#include "maths.h"
+
 struct ActFunctBase {
 
   std::string type;
@@ -48,6 +50,8 @@ struct Layer {
     outputs = b;
   }
 
+  virtual std::string data() {};
+
 };
 
 struct DenseDoubleLayer: public Layer {
@@ -55,8 +59,53 @@ struct DenseDoubleLayer: public Layer {
   std::vector<double> input;
   std::vector<double> output;
 
-  DenseDoubleLayer(int a, int b):Layer("DenseDoubleLayer", a, b) {
+  std::vector<std::vector<double>>  weight;
+  std::vector<double> bias;
 
+  DenseDoubleLayer(int a, int b):Layer("DenseDoubleLayer", a, b) {
+    input.resize(a);
+    output.resize(b);
+
+    weight.resize(b);
+    srand((unsigned) time(NULL));
+    for(int i = 0; i < b; ++i) {
+      weight[i].resize(a);
+      for(int j = 0; j < a; ++j) {
+        weight[i][j] = random<double>(-(double)1/a,(double)1/a);
+      }
+    }
+
+    bias.resize(b);
+    for(int i = 0; i < b; ++i)
+      bias[i] = random<double>(-1,1);
+
+  }
+
+  std::string data() {
+    std::string temp = "";
+
+    temp += "i/o: ";
+    temp += std::to_string(input.size());
+    temp += " -> ";
+    temp += std::to_string(output.size());
+    temp += "\n\nweight matrix:\n";
+
+    for(int i = 0; i < weight.size(); ++i) {
+      temp += "| ";
+      for(int j = 0; j < weight[i].size(); ++j ) {
+        temp += std::to_string(weight[i][j]);
+        temp += " ";
+      }
+      temp += " |\n";
+    }
+
+    temp += "\nbias vector:\n";
+    for(int i = 0; i < bias.size(); ++i) {
+      temp += "| ";
+      temp += std::to_string(bias[i]);
+      temp += " |\n";
+    }
+    return temp;
   }
 
 };
@@ -109,5 +158,6 @@ struct AnnWrap {
   void pop_back_layer();
   void set_cost_funct(std::string funct_type_t, std::string value_type_t);
   std::string signature();
+  std::string layer_data(int l);
 
 };
