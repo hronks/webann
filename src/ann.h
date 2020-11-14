@@ -161,3 +161,10 @@ struct AnnWrap {
   std::string layer_data(int l);
 
 };
+
+struct AnnData {
+
+  std::string data;
+
+  AnnData()
+}

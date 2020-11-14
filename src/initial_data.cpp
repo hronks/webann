@@ -1,6 +1,6 @@
-LotArea,OverallQual,OverallCond,TotalBsmtSF,FullBath,HalfBath,BedroomAbvGr,TotRmsAbvGrd,Fireplaces,GarageArea,AboveMedianPrice
-8450,7,5,856,2,1,3,8,0,548,1
-9600,6,8,1262,2,0,3,6,1,460,1
+std::string = initial_data  = "LotArea,OverallQual,OverallCond,TotalBsmtSF,FullBath,HalfBath,BedroomAbvGr,TotRmsAbvGrd,Fireplaces,GarageArea,AboveMedianPrice"
+"8450,7,5,856,2,1,3,8,0,548,1"
+"9600,6,8,1262,2,0,3,6,1,460,1"
 11250,7,5,920,2,1,3,6,1,608,1
 9550,7,5,756,1,0,3,7,1,642,0
 14260,8,5,1145,2,1,4,9,1,836,1
