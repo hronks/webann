@@ -4,6 +4,100 @@
 #include <cmath>
 
 #include "maths.h"
+#include "state.h"
+
+
+struct AnnDataContinerBase {
+
+  int train_size;
+  int valid_size;
+
+  virtual std::string get_data_train_row_string(int row) { };
+  virtual std::string get_data_valid_row_string(int row) { };
+  virtual void scan_raw_data(std::string & data) { };
+};
+
+template<typename T>
+struct AnnDataContiner: public AnnDataContinerBase {
+
+  std::vector<std::string> header_row;
+  std::vector<std::vector<T>> data_train;
+  std::vector<std::vector<T>> data_valid;
+  std::vector<int> raw_to_;
+
+  std::string get_data_train_row_string(int row) {
+
+    std::string x;
+    for(int i = 0; i < data_train[row].size(); ++i) {
+      x += std::to_string(data_train[row][i]);
+      if(i < data_train[row].size() -1) x += ",";
+    }
+  return x;
+  };
+
+  std::string get_data_valid_row_string(int row) {
+
+    std::string x;
+    for(int i = 0; i < data_valid[row].size(); ++i) {
+      x += std::to_string(data_valid[row][i]);
+      if(i < data_valid[row].size() -1) x += ",";
+    }
+  return x;
+  };
+
+  void scan_raw_data(std::string & data) {
+
+    train_size = 1;
+    valid_size = 1;
+    data_train.push_back({3.202, -3.290});
+    data_valid.push_back({212});
+  };
+
+};
+
+struct AnnData {
+
+  AnnDataContinerBase* data;
+
+  bool has_header;
+  int columns;
+  int xy_crossover;
+
+  float training_proportion;
+
+  AnnData(std::string data_type, std::string raw_data) {
+
+    if(data_type == "double")
+      data = new AnnDataContiner<double>;
+    data->scan_raw_data(raw_data);
+  }
+
+  std::string get_data_string() {
+
+    std::string x;
+
+    x += "\nTraining data\n";
+    for(int i = 0; i < data->train_size; ++i) {
+      x += "#";
+      x += std::to_string(i);
+      x += "\t";
+      x += data->get_data_train_row_string(0);
+      x += "\n";
+    }
+    x += "\nValidation data\n";
+    for(int i = 0; i < data->valid_size; ++i) {
+      x += "#";
+      x += std::to_string(i);
+      x += "\t";
+      x += data->get_data_valid_row_string(0);
+      if(i < data->valid_size - 1) x += "\n";
+    }
+
+    return x;
+  };
+
+
+};
 
 struct ActFunctBase {
 
@@ -160,11 +254,6 @@ struct AnnWrap {
   std::string signature();
   std::string layer_data(int l);
 
+  void fwd_prop(AnnData* data, int row) {};
+
 };
-
-struct AnnData {
-
-  std::string data;
-
-  AnnData()
-}

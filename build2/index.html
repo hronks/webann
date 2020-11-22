@@ -108,6 +108,7 @@
 
   <div class = "central_div" style="
     position: fixed;
+    width: calc(100vw - 300px);
     top: 10px;
     left: 330px;
     ">
@@ -117,10 +118,11 @@
       <button id="print_live_network">Print network</button>
       <button id="print_live_selected_layer">Print layer -></button>
       <input type="number" id="selection_live_selected_layer" value = 0 style="width:40px"></input>
+      <button id="print_data">Print data</button>
     </div>
     <div>
       <textarea id = "out" style="
-      width: 400px;
+      width: calc(100vw - 400px);
       height: 500px;
       "></textarea>
     </div>
@@ -140,7 +142,9 @@
 
     Module.onRuntimeInitialized = _ => {
 
+      live_state = new Module.State;
       live_network = new Module.AnnWrap;
+      live_data = new Module.AnnData("double", live_state.data);
 
       live_network.push_back_layer("dense", "double", "relu", 10, 32);
       live_network.push_back_layer("dense", "double", "relu", 32, 32);
@@ -187,6 +191,13 @@
 
         print("LAYER REMOVED FROM NETWORK\nLIVE NETWORK IS...\n");
         print(live_network.signature());
+        print("\n");
+      }
+
+      document.getElementById("print_data").onclick = function() {
+
+        print("FULL DATA IS...\n");
+        print(live_data.get_data_string());
         print("\n");
       }
 

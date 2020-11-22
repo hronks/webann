@@ -12,6 +12,11 @@ EMSCRIPTEN_BINDINGS(my_module) {
     .function("layer_data", &AnnWrap::layer_data);
 
   emscripten::class_<AnnData>("AnnData")
+    .constructor<std::string, std::string>()
+    .function("get_data_string", &AnnData::get_data_string);
+
+  emscripten::class_<State>("State")
     .constructor()
-    .function
+    .property("data", &State::data);
+
 }
